@@ -202,6 +202,9 @@
                         <a class="button" href="<?php echo $b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] ?>?format=mobileprovision">Install Profile</a>
                     <?php } ?>
                         <a class="button" href="itms-services://?action=download-manifest&amp;url=<?php echo urlencode($b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] . "?format=plist") ?>">Install Application</a>
+                        <?php if (!$router->isHistory) :?>
+                                                <a class="button" href="<?php echo $b . $app['dir'] ?>">Application History</a>
+                        <?php endif ?>  
                     <?php if ($app[AppUpdater::INDEX_NOTES]) : ?>
                         <p><br/><br/></p>
                         <p><b>What's New:</b><br/><?php echo $app[AppUpdater::INDEX_NOTES] ?></p>
@@ -241,7 +244,7 @@
                         <h2><?php echo $app[AppUpdater::INDEX_APP] ?></h2>
                         <p><b>Version:</b>
                     <?php
-                      if ($app[AppUpdater::INDEX_SUBTITLE]) {
+                      if (isset($app[AppUpdater::INDEX_SUBTITLE]) && $app[AppUpdater::INDEX_SUBTITLE]) {
                           echo $app[AppUpdater::INDEX_SUBTITLE] . " (" . $app[AppUpdater::INDEX_VERSION] . ")";
                       } else {
                           echo $app[AppUpdater::INDEX_VERSION];
@@ -255,10 +258,19 @@
                         </p>
 
                         <div class="ipadbuttons">
-                    <?php if ($app[AppUpdater::INDEX_PROFILE]) { ?>
+                    <?php if (isset($app[AppUpdater::INDEX_PROFILE]) && $app[AppUpdater::INDEX_PROFILE]) { ?>
                             <a class="button" href="<?php echo $b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] ?>?format=mobileprovision">Install Profile</a>
                     <?php } ?>
-                            <a class="button" href="itms-services://?action=download-manifest&amp;url=<?php echo urlencode($b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] . "?format=plist") ?>">Install Application</a>
+                            <a class="button" href="itms-services://?action=download-manifest&amp;url=<?php
+                            $versionPath = "";
+                            if (strlen($app['versionpath']) > 0 && ($app['versionpath'] !== 0)) {
+                            	$versionPath = "/".$app['versionpath'];
+                            }
+                            	 
+                            echo urlencode($b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR].$versionPath . "?format=plist") ?>">Install Application</a>
+                                                    <?php if (!$router->isHistory) :?>
+                                                <a class="button" href="<?php echo $b . $app['dir'] ?>">Application History</a>
+                        <?php endif ?>
                         </div>
 
                     <?php if ($app[AppUpdater::INDEX_NOTES]) : ?>
@@ -324,10 +336,13 @@
                             <a class="button" href="<?php echo $b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] ?>?format=mobileprovision">Download Profile </a>
                     <?php endif;
                     if ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS) : ?>
-                        <a class="button" href="<?php echo $b . $app['path'] ?>">Download Application</a>
+                        <a class="button" href="<?php echo $b . $app['path'] ?>">Download Application</a>                  
                     <?php elseif ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_ANDROID) : ?>
                         <a class="button" href="<?php echo $b . $app['path'] ?>">Download Application</a>
                     <?php endif ?>
+                    <?php if (!$router->isHistory) :?>   
+                        <a class="button" href="<?php echo $b . $app['dir'] ?>">Application History</a>
+                    <?php endif ?>  
                         </div>
 
                     <?php if ($app[AppUpdater::INDEX_NOTES]) : ?>

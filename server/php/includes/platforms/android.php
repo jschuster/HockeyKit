@@ -33,6 +33,9 @@ class AndroidAppUpdater extends AbstractAppUpdater
         }
 
         $dir = array_shift(array_keys($files[self::VERSIONS_SPECIFIC_DATA]));
+		if (isset($arguments['version'])) {
+        	$dir = $arguments['version'];
+        }
         $current = $files[self::VERSIONS_SPECIFIC_DATA][$dir];
         
         if ($format == self::PARAM_2_FORMAT_VALUE_APK)

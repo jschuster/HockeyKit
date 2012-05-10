@@ -32,6 +32,9 @@ class iOSAppUpdater extends AbstractAppUpdater
         }
 
         $dir = array_shift(array_keys($files[self::VERSIONS_SPECIFIC_DATA]));
+        if (isset($arguments['version'])) {
+        	$dir = $arguments['version'];
+        }
         $current = $files[self::VERSIONS_SPECIFIC_DATA][$dir];
         
         if ($format == self::PARAM_2_FORMAT_VALUE_PLIST) // || $type == self::PARAM_1_TYPE_VALUE_APP)

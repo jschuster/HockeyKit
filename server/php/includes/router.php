@@ -10,7 +10,8 @@ class Router
         '/apps' => '/index',
         '/apps/' => '/index',
         '/apps/:bundleidentifier@^[\w-.]+$' => '/app',
-        '/api/2/apps/:bundleidentifier@^[\w-.]+$' => '/api'
+        '/api/2/apps/:bundleidentifier@^[\w-.]+$' => '/api',
+        '/api/2/apps/:bundleidentifier@^[\w-.]+$/:version@^[\w-.]+$' => '/api'
     );
 
     static protected $instance;
@@ -73,6 +74,7 @@ class Router
     public $arguments;
     public $api;
     public $servername;
+    public $isHistory;
     public $args          = array();
     protected $args_get   = array();
     protected $args_post  = array();
@@ -118,10 +120,15 @@ class Router
 
         $this->api = (strpos($request, '/api/') === false && strpos($request, '/apps/') === false) || $is_v1_client ?
             AppUpdater::API_V1 : AppUpdater::API_V2;
-
         if ($this->api == AppUpdater::API_V1)
         {
-            return $this->routeV1($options, $is_v1_client);
+        	$path = ltrim($request,"/");
+        	$path = rtrim($path,"/");
+        	$this->isHistory = true;
+        	if (strlen($path) == 0 || (strpos($path, 'index') !== false)) {
+        		$this->isHistory = false;
+        	}
+            return $this->routeV1($options, $is_v1_client, $path);
         }
 
         // find matching route
@@ -266,7 +273,7 @@ class Router
         $this->app->execute($this->action, array_merge($this->arguments, $this->args));
     }
     
-    protected function routeV1($options, $is_client = false)
+    protected function routeV1($options, $is_client = false, $appDir = null)
     {
         $bundleidentifier = self::arg_match(AppUpdater::PARAM_1_IDENTIFIER, '/^[\w-.]+$/');
         $type             = self::arg_match(AppUpdater::PARAM_1_TYPE, '/^(' . AppUpdater::PARAM_1_TYPE_VALUE_IPA . '|' . AppUpdater::PARAM_1_TYPE_VALUE_APP . '|' .AppUpdater::PARAM_1_TYPE_VALUE_PROFILE . ')$/');
@@ -292,7 +299,7 @@ class Router
         }
         
         $this->app = AppUpdater::factory(null, $options);
-        $this->app->show($bundleidentifier);
+        $this->app->show($bundleidentifier, $appDir);
     }
     
     

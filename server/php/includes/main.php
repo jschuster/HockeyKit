@@ -103,6 +103,7 @@ class AppUpdater
     // define keys for the array to keep a list of available beta apps to be displayed in the web interface
     const INDEX_APP             = 'app';
     const INDEX_VERSION         = 'version';
+    const INDEX_VERSION_PATH    = 'versionpath';
     const INDEX_SUBTITLE        = 'subtitle';
     const INDEX_DATE            = 'date';
     const INDEX_APPSIZE         = 'appsize';
@@ -476,14 +477,20 @@ class AppUpdater
             break;
         }
         
-        return $publicVersion;
+        return $publicVersion;   
     }
     
-    public function show($appBundleIdentifier)
+    public function show($appBundleIdentifier, $appDir = null)
     {
+      if (!is_dir($this->appDirectory.$appDir)) {
+        $appDir = null;
+      }
         // first get all the subdirectories, which do not have a file named "private" present
         if ($handle = opendir($this->appDirectory)) {
             while (($file = readdir($handle)) !== false) {
+            	if ($appDir != null && $file != $appDir) {
+            		continue;
+            	}
                 if (
                   in_array($file, array('.', '..')) ||
                   !is_dir($this->appDirectory . $file) ||
@@ -512,7 +519,19 @@ class AppUpdater
                     continue;
                 }
                 
-                $current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
+								$fileVersions = $files[self::VERSIONS_SPECIFIC_DATA];
+                if (!$appDir) {
+                	$fileVersions = array();
+                	if (current($files[self::VERSIONS_SPECIFIC_DATA])) {
+                		$fileVersions[] = current($files[self::VERSIONS_SPECIFIC_DATA]);
+                	}
+                }
+                
+                
+                foreach ($fileVersions as $version_path => $current) {
+         				$check = array();
+         				$check[] = $current;
+         				$current = $this->findPublicVersion($check);
                 $ipa      = isset($current[self::FILE_IOS_IPA]) ? $current[self::FILE_IOS_IPA] : null;
                 $plist    = isset($current[self::FILE_IOS_PLIST]) ? $current[self::FILE_IOS_PLIST] : null;
                 $apk      = isset($current[self::FILE_ANDROID_APK]) ? $current[self::FILE_ANDROID_APK] : null;
@@ -557,6 +576,7 @@ class AppUpdater
                     $newApp[self::INDEX_VERSION]        = $parsed_plist['items'][0]['metadata']['bundle-version'];
                     $newApp[self::INDEX_DATE]           = filectime($ipa);
                     $newApp[self::INDEX_APPSIZE]        = filesize($ipa);
+                    $newApp[self::INDEX_VERSION_PATH]	  = $version_path;
                     
                     if ($profile) {
                         $newApp[self::INDEX_PROFILE]        = $profile;
@@ -611,6 +631,7 @@ class AppUpdater
             
                 // add it to the array
                 $this->applications[] = $newApp;
+                }
             }
             closedir($handle);
         }
