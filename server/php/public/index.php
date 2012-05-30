@@ -210,7 +210,13 @@
                         <?php if (isset($app[AppUpdater::INDEX_PROFILE]) && $app[AppUpdater::INDEX_PROFILE]) { ?>                    
                         <a class="button" href="<?php echo $b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] ?>?format=mobileprovision">Install Profile</a>
                     <?php } ?>
-                        <a class="button" href="itms-services://?action=download-manifest&amp;url=<?php echo urlencode($b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] . "?format=plist") ?>">Install Application</a>
+                         <a class="button" href="itms-services://?action=download-manifest&amp;url=<?php
+                            $versionPath = "";
+                            if (strlen($app['versionpath']) > 0 && ($app['versionpath'] !== 0)) {
+                            	$versionPath = "/".$app['versionpath'];
+                            }
+                            	 
+                            echo urlencode($b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR].$versionPath . "?format=plist") ?>">Install Application</a>
                         <?php if (!$router->isHistory) :?>
                                                 <a class="button" href="<?php echo $b . $app['dir'] ?>">Application History</a>
                         <?php endif ?>  
