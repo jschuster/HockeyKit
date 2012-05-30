@@ -101,7 +101,16 @@
                           echo "<b>Released:</b> " . date('m/d/Y H:i:s', $app[AppUpdater::INDEX_DATE]);
                     ?>
                         </p>
-                        <a class="button" href="<?php echo $b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR] ?>?format=apk">Install Application</a>
+                        <a class="button" href="<?php 
+                          $versionPath = "";
+                          if (strlen($app['versionpath']) > 0 && ($app['versionpath'] !== 0)) {
+                            $versionPath = "/".$app['versionpath'];
+                          }
+                            	
+                          echo $b . 'api/2/apps/' . $app[AppUpdater::INDEX_DIR].$versionPath ?>?format=apk">Install Application</a>
+                        <?php if (!$router->isHistory) :?>
+                                                                        <a class="button" href="<?php echo $b . $app['dir'] ?>">Application History</a>
+                                                <?php endif ?>
                     <?php if ($app[AppUpdater::INDEX_NOTES]) : ?>
                         <p><br/><br/></p>
                         <p><b>What's New:</b><br/><?php echo $app[AppUpdater::INDEX_NOTES] ?></p>

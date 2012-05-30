@@ -598,6 +598,7 @@ class AppUpdater
                     $newApp[self::INDEX_DATE]       = filectime($apk);
                     $newApp[self::INDEX_APPSIZE]    = filesize($apk);
                     $newApp[self::INDEX_PLATFORM]   = self::APP_PLATFORM_ANDROID;
+                    $newApp[self::INDEX_VERSION_PATH]	  = $version_path;
                 }
                 
                 // now get the current user statistics
